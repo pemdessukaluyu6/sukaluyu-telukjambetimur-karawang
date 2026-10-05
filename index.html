@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Resmi Desa Sukaluyu | Digital & Elegan</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        emerald: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        },
+                        gold: {
+                            500: '#d4af37',
+                            600: '#aa8c2c',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Interactive Statistics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        [x-cloak] { display: none !important; }
+        .glass-nav { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased" x-data="sukaluyuApp()">
+
+    <!-- TOP NOTIFICATION BAR -->
+    <div class="bg-emerald-900 text-emerald-100 text-xs py-2 px-4">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-1">
+            <div class="flex items-center gap-3">
+                <span class="bg-gold-500 text-emerald-950 px-2 py-0.5 rounded font-semibold text-[10px] uppercase tracking-wider">Digital Village</span>
+                <p><i class="fas fa-bullhorn mr-1 text-gold-500"></i> <span x-text="cms.settings.announcementTicker || 'Selamat Datang di Portal Resmi Digital Desa Sukaluyu, Kabupaten Karawang.'"></span></p>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="hidden md:inline"><i class="fas fa-clock mr-1 text-gold-500"></i> Jam Layanan: Sen - Jum (08:00 - 15:00 WIB)</span>
+                <button @click="openAdminLogin = true" class="bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1 rounded text-xs transition font-medium flex items-center gap-1 shadow-sm">
+                    <i class="fas fa-lock text-[10px]"></i> Login Admin CMS
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN NAVBAR -->
+    <header class="sticky top-0 z-40 glass-nav border-b border-emerald-100 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <!-- Logo & Village Name -->
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-emerald-800 rounded-xl flex items-center justify-center text-white shadow-md border border-gold-500/40">
+                        <i class="fas fa-landmark text-xl text-gold-500"></i>
+                    </div>
+                    <div>
+                        <a href="#beranda" class="text-xl font-bold tracking-tight text-emerald-900 hover:text-emerald-700 flex items-center gap-1.5">
+                            <span x-text="cms.settings.villageName || 'Desa Sukaluyu'"></span>
+                            <i class="fas fa-circle-check text-gold-500 text-xs" title="Official Verified"></i>
+                        </a>
+                        <p class="text-xs text-slate-500 font-medium tracking-wide" x-text="cms.settings.district || 'Kec. Telukjambe Timur, Kab. Karawang'"></p>
+                    </div>
+                </div>
+
+                <!-- Desktop Menu -->
+                <nav class="hidden lg:flex items-center space-x-1">
+                    <a href="#beranda" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition">Beranda</a>
+                    <div class="relative" x-data="{ open: false }" @mouseleave="open = false">
+                        <button @mouseenter="open = true" @click="open = !open" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition flex items-center gap-1">
+                            Profil Desa <i class="fas fa-chevron-down text-[10px] ml-1"></i>
+                        </button>
+                        <div x-show="open" x-cloak class="absolute left-0 mt-1 w-48 bg-white rounded-xl shadow-xl py-2 border border-slate-100">
+                            <a href="#sejarah" class="block px-4 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-800">Sejarah Desa</a>
+                            <a href="#visimisi" class="block px-4 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-800">Visi & Misi</a>
+                            <a href="#perangkat" class="block px-4 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-800">Perangkat Desa</a>
+                        </div>
+                    </div>
+                    <a href="#layanan" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition">Layanan Surat</a>
+                    <a href="#berita" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition">Berita</a>
+                    <a href="#umkm" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition">Potensi & UMKM</a>
+                    <a href="#statistik" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition">Statistik</a>
+                    <a href="#galeri" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition">Galeri</a>
+                    <a href="#kontak" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition">Kontak</a>
+                </nav>
+
+                <!-- Action CTA -->
+                <div class="hidden lg:flex items-center gap-3">
+                    <a href="#layanan" class="bg-gradient-to-r from-emerald-700 to-emerald-900 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg hover:from-emerald-800 hover:to-emerald-950 transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                        <i class="fas fa-file-invoice text-gold-500"></i> Buat Surat Mandiri
+                    </a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="lg:hidden flex items-center">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-slate-700 hover:text-emerald-800 focus:outline-none p-2 rounded-lg bg-emerald-50">
+                        <i :class="mobileMenuOpen ? 'fas fa-times' : 'fas fa-bars'" class="text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Drawer -->
+        <div x-show="mobileMenuOpen" x-cloak class="lg:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-6 space-y-2 shadow-xl">
+            <a href="#beranda" @click="mobileMenuOpen = false" class="block px-3 py-2 rounded-lg font-medium text-slate-700 hover:bg-emerald-50">Beranda</a>
+            <a href="#sejarah" @click="mobileMenuOpen = false" class="block px-3 py-2 rounded-lg font-medium text-slate-700 hover:bg-emerald-50">Sejarah Desa</a>
+            <a href="#visimisi" @click="mobileMenuOpen = false" class="block px-3 py-2 rounded-lg font-medium text-slate-700 hover:bg-emerald-50">Visi & Misi</a>
+            <a href="#perangkat" @click="mobileMenuOpen = false" class="block px-3 py-2 rounded-lg font-medium text-slate-700 hover:bg-emerald-50">Perangkat Desa</a>
+            <a href="#layanan" @click="mobileMenuOpen = false" class="block px-3 py-2 rounded-lg font-medium text-slate-700 hover:bg-emerald-50">Layanan Surat</a>
+            <a href="#berita" @click="mobileMenuOpen = false" class="block px-3 py-2 rounded-lg font-medium text-slate-700 hover:bg-emerald-50">Portal Berita</a>
+            <a href="#umkm" @click="mobileMenuOpen = false" class="block px-3 py-2 rounded-lg font-medium text-slate-700 hover:bg-emerald-50">Potensi UMKM</a>
+            <a href="#statistik" @click="mobileMenuOpen = false" class="block px-3 py-2 rounded-lg font-medium text-slate-700 hover:bg-emerald-50">Statistik Penduduk</a>
+            <a href="#galeri" @click="mobileMenuOpen = false" class="block px-3 py-2 rounded-lg font-medium text-slate-700 hover:bg-emerald-50">Galeri Desa</a>
+            <a href="#kontak" @click="mobileMenuOpen = false" class="block px-3 py-2 rounded-lg font-medium text-slate-700 hover:bg-emerald-50">Kontak & Lokasi</a>
+            <div class="pt-2">
+                <a href="#layanan" @click="mobileMenuOpen = false" class="w-full text-center block bg-emerald-800 text-white py-2.5 rounded-xl font-semibold text-sm shadow">Buat Surat Mandiri</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section id="beranda" class="relative bg-gradient-to-br from-emerald-950 via-emerald-900 to-slate-900 text-white overflow-hidden py-24 lg:py-32">
+        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-emerald-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center gap-2 bg-emerald-800/80 border border-gold-500/40 px-3.5 py-1.5 rounded-full text-xs font-semibold text-gold-400 backdrop-blur-md">
+                        <i class="fas fa-star text-gold-500"></i> Website Resmi Pemerintahan Desa Sukaluyu
+                    </div>
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
+                        Transformasi <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-amber-200">Desa Digital</span> & Mandiri
+                    </h1>
+                    <p class="text-slate-300 text-lg leading-relaxed max-w-2xl" x-text="cms.settings.heroSubtitle || 'Mewujudkan pelayanan publik yang transparan, cepat, dan berbasis digital untuk kemakmuran seluruh warga masyarakat Desa Sukaluyu.'">
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <a href="#layanan" class="bg-gold-500 hover:bg-gold-600 text-emerald-950 px-8 py-4 rounded-2xl font-bold shadow-lg hover:shadow-gold-500/20 transition flex items-center gap-2">
+                            <i class="fas fa-file-alt"></i> Layanan Surat Mandiri
+                        </a>
+                        <a href="#sejarah" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-4 rounded-2xl font-bold backdrop-blur-md transition flex items-center gap-2">
+                            <i class="fas fa-compass"></i> Kenali Desa Kami
+                        </a>
+                    </div>
+                    <!-- Quick stats badges -->
+                    <div class="grid grid-cols-3 gap-4 pt-8 border-t border-emerald-800/80">
+                        <div>
+                            <p class="text-2xl sm:text-3xl font-extrabold text-gold-400" x-text="cms.stats.totalPenduduk || '8,420'"></p>
+                            <p class="text-xs text-slate-400 uppercase tracking-wider mt-1">Total Penduduk</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl sm:text-3xl font-extrabold text-gold-400" x-text="cms.stats.totalKK || '2,450'"></p>
+                            <p class="text-xs text-slate-400 uppercase tracking-wider mt-1">Kepala Keluarga</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl sm:text-3xl font-extrabold text-gold-400" x-text="cms.stats.totalRT || '32'"></p>
+                            <p class="text-xs text-slate-400 uppercase tracking-wider mt-1">Jumlah RT / RW</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-5">
+                    <div class="relative mx-auto max-w-md lg:max-w-none">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-gold-500 to-emerald-400 rounded-3xl transform rotate-3 scale-105 opacity-30 blur-lg"></div>
+                        <div class="relative bg-emerald-900/90 border border-emerald-700/60 p-6 rounded-3xl shadow-2xl backdrop-blur-xl space-y-6">
+                            <div class="flex items-center justify-between border-b border-emerald-800 pb-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-gold-500/20 flex items-center justify-center text-gold-400">
+                                        <i class="fas fa-user-shield text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-white text-sm">Kepala Desa Sukaluyu</h3>
+                                        <p class="text-xs text-emerald-300" x-text="cms.settings.headName || 'H. Ahmad Supriyadi, S.E.'"></p>
+                                    </div>
+                                </div>
+                                <span class="bg-emerald-800 text-emerald-200 text-[10px] px-2.5 py-1 rounded-full font-semibold">Aktif</span>
+                            </div>
+                            <blockquote class="text-slate-200 text-sm italic leading-relaxed">
+                                "&ldquo;Selamat datang di website resmi Desa Sukaluyu. Kami berkomitmen memberikan pelayanan prima secara digital untuk memudahkan seluruh warga dalam pengurusan administrasi.&rdquo;"
+                            </blockquote>
+                            <div class="pt-2 flex items-center justify-between text-xs text-slate-400">
+                                <span>Kantor Desa Sukaluyu</span>
+                                <span class="text-gold-400 font-medium">Kabupaten Karawang</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROFIL DESA (SEJARAH & VISI MISI) -->
+    <section id="sejarah" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                <span class="text-emerald-700 font-bold text-xs uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">Profil & Latar Belakang</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-emerald-950">Sejarah & Filosofi Desa Sukaluyu</h2>
+                <p class="text-slate-600 text-base" x-text="cms.profile.shortDesc || 'Mengenal lebih dekat asal-usul, nilai budaya, dan perjalanan pembangunan Desa Sukaluyu dari masa ke masa.'"></p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-6 space-y-6">
+                    <div class="bg-emerald-50 border border-emerald-100 p-8 rounded-3xl space-y-4 shadow-sm">
+                        <div class="w-12 h-12 bg-emerald-800 text-gold-500 rounded-xl flex items-center justify-center text-xl font-bold shadow">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-emerald-950">Sejarah Singkat Desa</h3>
+                        <p class="text-slate-700 leading-relaxed text-sm sm:text-base" x-text="cms.profile.history || 'Desa Sukaluyu berasal dari kata Suka dan Luyu yang berarti masyarakatnya hidup berdampingan secara damai, selaras, dan gotong royong. Berdiri sejak tahun 1982 sebagai pemekaran wilayah, desa ini terus berkembang menjadi kawasan agraris modern yang dinamis.'">
+                        </p>
+                    </div>
+                </div>
+                
+                <div id="visimisi" class="lg:col-span-6 space-y-6">
+                    <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-xl space-y-6 border border-slate-800">
+                        <div>
+                            <span class="text-gold-400 font-bold text-xs uppercase tracking-widest">Visi Utama</span>
+                            <h3 class="text-xl sm:text-2xl font-bold text-white mt-1" x-text="cms.profile.vision || 'Terwujudnya Desa Sukaluyu yang Religius, Maju, Sejahtera, dan Berbasis Digital yang Transparan.'"></h3>
+                        </div>
+                        <div class="space-y-3 pt-4 border-t border-slate-800">
+                            <span class="text-gold-400 font-bold text-xs uppercase tracking-widest">Misi Pembangunan</span>
+                            <ul class="space-y-2.5 text-sm text-slate-300">
+                                <template x-for="(mission, index) in cms.profile.missions" :key="index">
+                                    <li class="flex items-start gap-3">
+                                        <i class="fas fa-check-circle text-gold-500 mt-1"></i>
+                                        <span x-text="mission"></span>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PERANGKAT DESA -->
+    <section id="perangkat" class="py-20 bg-slate-50 border-y border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                <span class="text-emerald-700 font-bold text-xs uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">Pemerintahan Desa</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-emerald-950">Struktur Perangkat Desa Sukaluyu</h2>
+                <p class="text-slate-600 text-base">Jajaran aparatur pemerintah desa yang siap melayani masyarakat dengan sepenuh hati.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <template x-for="official in cms.officials" :key="official.id">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl transition group">
+                        <div class="h-56 bg-slate-200 relative overflow-hidden">
+                            <img :src="official.image || 'https://placehold.co/400x400/065f46/ffffff?text=Foto'" :alt="official.name" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x400/065f46/ffffff?text=Foto+Resmi'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-emerald-950/80 via-transparent to-transparent opacity-90"></div>
+                            <span class="absolute bottom-3 left-3 bg-gold-500 text-emerald-950 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider" x-text="official.position"></span>
+                        </div>
+                        <div class="p-6 space-y-2">
+                            <h3 class="font-bold text-lg text-emerald-950" x-text="official.name"></h3>
+                            <p class="text-xs text-slate-500 font-medium">NIP / NIPD: <span x-text="official.nip || '-'"></span></p>
+                            <p class="text-xs text-slate-600 pt-2 border-t border-slate-100 flex items-center gap-1.5">
+                                <i class="fas fa-phone-alt text-emerald-700"></i> <span x-text="official.phone || '0812xxxxxxxx'"></span>
+                            </p>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </section>
+
+    <!-- LAYANAN PUBLIK & SURAT MANDIRI -->
+    <section id="layanan" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                <span class="text-emerald-700 font-bold text-xs uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">Digitalisasi Layanan</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-emerald-950">Layanan Surat Mandiri Online</h2>
+                <p class="text-slate-600 text-base">Ajukan permohonan surat pengantar desa secara online tanpa perlu antre di kantor kelurahan.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                <!-- Service Cards -->
+                <div class="lg:col-span-5 space-y-4">
+                    <h3 class="text-lg font-bold text-emerald-950 mb-2 flex items-center gap-2">
+                        <i class="fas fa-list-check text-gold-500"></i> Pilih Jenis Surat
+                    </h3>
+                    <template x-for="service in cms.services" :key="service.id">
+                        <div @click="selectedService = service" :class="selectedService.id === service.id ? 'border-emerald-700 bg-emerald-50/70 shadow-md' : 'border-slate-200 bg-white hover:border-emerald-300'" class="border p-5 rounded-2xl cursor-pointer transition flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-800 text-white flex items-center justify-center font-bold">
+                                    <i :class="service.icon || 'fas fa-file-alt'"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-emerald-950 text-sm" x-text="service.name"></h4>
+                                    <p class="text-xs text-slate-500 mt-0.5" x-text="service.desc"></p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-xs text-slate-400"></i>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Request Form -->
+                <div class="lg:col-span-7">
+                    <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-xl border border-slate-800 space-y-6">
+                        <div class="border-b border-slate-800 pb-4 flex justify-between items-center">
+                            <div>
+                                <h3 class="text-xl font-bold text-white">Formulir Permohonan</h3>
+                                <p class="text-xs text-gold-400 mt-1">Layanan Terpilih: <span class="font-bold underline" x-text="selectedService.name"></span></p>
+                            </div>
+                            <span class="bg-emerald-800 text-emerald-200 text-xs px-3 py-1 rounded-full font-medium">Digital Form</span>
+                        </div>
+
+                        <form @submit.prevent="submitLetterRequest" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Nama Lengkap Sesuai KTP</label>
+                                    <input type="text" x-model="letterForm.nama" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-gold-500" placeholder="Contoh: Budi Santoso">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Nomor NIK (16 Digit)</label>
+                                    <input type="text" x-model="letterForm.nik" required maxlength="16" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-gold-500" placeholder="3215XXXXXXXXXXXXXXXX">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">Nomor WhatsApp Aktif</label>
+                                    <input type="text" x-model="letterForm.phone" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-gold-500" placeholder="08123456789">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-300 mb-1">RT / RW / Dusun</label>
+                                    <input type="text" x-model="letterForm.rt_rw" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-gold-500" placeholder="RT 02 / RW 01 Sukaluyu">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Keperluan / Keterangan Tambahan</label>
+                                <textarea x-model="letterForm.keperluan" rows="3" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-gold-500" placeholder="Tuliskan keperluan pengajuan surat secara jelas..."></textarea>
+                            </div>
+
+                            <button type="submit" class="w-full bg-gold-500 hover:bg-gold-600 text-emerald-950 font-bold py-3.5 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
+                                <i class="fas fa-paper-plane"></i> Kirim Permohonan Surat Online
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PORTAL BERITA & PENGUMUMAN -->
+    <section id="berita" class="py-20 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
+                <div class="space-y-3">
+                    <span class="text-emerald-700 font-bold text-xs uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">Informasi Desa</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-emerald-950">Berita & Pengumuman Terbaru</h2>
+                    <p class="text-slate-600 text-base">Ikuti perkembangan terbaru, kegiatan warga, dan pengumuman resmi dari Desa Sukaluyu.</p>
+                </div>
+                <div>
+                    <span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-4 py-2 rounded-xl border border-emerald-200">Total Berita: <span x-text="cms.news.length"></span></span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <template x-for="item in cms.news" :key="item.id">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl transition flex flex-col justify-between">
+                        <div>
+                            <div class="h-48 bg-slate-200 relative overflow-hidden">
+                                <img :src="item.image || 'https://placehold.co/600x400/065f46/ffffff?text=Berita+Desa'" :alt="item.title" class="w-full h-full object-cover hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/600x400/065f46/ffffff?text=Berita+Desa'">
+                                <span class="absolute top-3 left-3 bg-emerald-900/90 text-gold-400 text-[10px] font-bold px-3 py-1 rounded-full backdrop-blur-md uppercase tracking-wider" x-text="item.category"></span>
+                            </div>
+                            <div class="p-6 space-y-3">
+                                <div class="flex items-center gap-2 text-xs text-slate-400">
+                                    <i class="fas fa-calendar-alt text-emerald-700"></i> <span x-text="item.date"></span>
+                                    <span>•</span>
+                                    <i class="fas fa-user text-emerald-700"></i> <span x-text="item.author || 'Admin Desa'"></span>
+                                </div>
+                                <h3 class="font-bold text-xl text-emerald-950 leading-snug hover:text-emerald-700 cursor-pointer" x-text="item.title"></h3>
+                                <p class="text-slate-600 text-sm line-clamp-3" x-text="item.excerpt"></p>
+                            </div>
+                        </div>
+                        <div class="px-6 pb-6 pt-2">
+                            <button @click="activeNews = item; openNewsModal = true" class="text-emerald-800 font-bold text-sm hover:text-emerald-600 flex items-center gap-1 group">
+                                Baca Selengkapnya <i class="fas fa-arrow-right text-xs group-hover:translate-x-1 transition"></i>
+                            </button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </section>
+
+    <!-- POTENSI & UMKM DESA -->
+    <section id="umkm" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                <span class="text-emerald-700 font-bold text-xs uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">Ekonomi Kerakyatan</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-emerald-950">Potensi & UMKM Desa Sukaluyu</h2>
+                <p class="text-slate-600 text-base">Dukung produk lokal berkualitas hasil karya warga masyarakat Desa Sukaluyu.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <template x-for="umkm in cms.umkm" :key="umkm.id">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl transition flex flex-col justify-between">
+                        <div>
+                            <div class="h-48 bg-slate-200 relative overflow-hidden">
+                                <img :src="umkm.image || 'https://placehold.co/600x400/d4af37/065f46?text=UMKM+Desa'" :alt="umkm.name" class="w-full h-full object-cover hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/600x400/d4af37/065f46?text=UMKM+Desa'">
+                                <span class="absolute top-3 right-3 bg-gold-500 text-emerald-950 font-bold text-xs px-3 py-1 rounded-full shadow" x-text="umkm.price"></span>
+                            </div>
+                            <div class="p-6 space-y-3">
+                                <span class="text-[10px] bg-emerald-50 text-emerald-800 font-bold px-2.5 py-1 rounded-md uppercase tracking-wider" x-text="umkm.category"></span>
+                                <h3 class="font-bold text-xl text-emerald-950" x-text="umkm.name"></h3>
+                                <p class="text-slate-600 text-sm" x-text="umkm.desc"></p>
+                            </div>
+                        </div>
+                        <div class="p-6 pt-0 flex items-center justify-between border-t border-slate-100 mt-4">
+                            <span class="text-xs text-slate-500">Pemilik: <strong class="text-slate-800" x-text="umkm.owner"></strong></span>
+                            <a :href="'https://wa.me/' + umkm.whatsapp + '?text=Halo%20saya%20tertarik%20dengan%20produk%20' + encodeURIComponent(umkm.name)" target="_blank" class="bg-emerald-800 hover:bg-emerald-700 text-white text-xs px-4 py-2 rounded-xl font-semibold flex items-center gap-1.5 shadow">
+                                <i class="fab fa-whatsapp text-sm text-gold-400"></i> Hubungi
+                            </a>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATISTIK PENDUDUK (GRAFIK INTERAKTIF) -->
+    <section id="statistik" class="py-20 bg-slate-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                <span class="text-gold-400 font-bold text-xs uppercase tracking-widest bg-slate-800 px-3 py-1 rounded-full border border-slate-700">Demografi Kependudukan</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Statistik Penduduk Desa Sukaluyu</h2>
+                <p class="text-slate-400 text-base">Data kependudukan real-time berdasarkan pencatatan administrasi desa.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- Chart Container -->
+                <div class="bg-slate-800 p-6 sm:p-8 rounded-3xl border border-slate-700 shadow-2xl">
+                    <h3 class="font-bold text-lg text-white mb-6 flex items-center gap-2">
+                        <i class="fas fa-chart-pie text-gold-500"></i> Distribusi Penduduk Berdasarkan Usia
+                    </h3>
+                    <div class="relative h-72">
+                        <canvas id="demographicChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Statistics Data Breakdown -->
+                <div class="space-y-6">
+                    <div class="bg-slate-800 p-6 rounded-3xl border border-slate-700 space-y-4">
+                        <h3 class="font-bold text-lg text-white">Ringkasan Kependudukan</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center py-2 border-b border-slate-700 text-sm">
+                                <span class="text-slate-300">Jumlah Laki-Laki</span>
+                                <span class="font-bold text-gold-400" x-text="cms.stats.laki || '4,210 Jiwa'"></span>
+                            </div>
+                            <div class="flex justify-between items-center py-2 border-b border-slate-700 text-sm">
+                                <span class="text-slate-300">Jumlah Perempuan</span>
+                                <span class="font-bold text-gold-400" x-text="cms.stats.perempuan || '4,210 Jiwa'"></span>
+                            </div>
+                            <div class="flex justify-between items-center py-2 border-b border-slate-700 text-sm">
+                                <span class="text-slate-300">Total Kepala Keluarga (KK)</span>
+                                <span class="font-bold text-gold-400" x-text="cms.stats.totalKK || '2,450 KK'"></span>
+                            </div>
+                            <div class="flex justify-between items-center py-2 text-sm">
+                                <span class="text-slate-300">Jumlah Dusun / RW</span>
+                                <span class="font-bold text-gold-400" x-text="cms.stats.dusun || '4 Dusun / 8 RW'"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALERI FOTO & VIDEO -->
+    <section id="galeri" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                <span class="text-emerald-700 font-bold text-xs uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">Dokumentasi Kegiatan</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-emerald-950">Galeri Desa Sukaluyu</h2>
+                <p class="text-slate-600 text-base">Potret aktivitas warga, pembangunan infrastruktur, dan keindahan alam Desa Sukaluyu.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <template x-for="gallery in cms.galleries" :key="gallery.id">
+                    <div class="group relative bg-slate-100 rounded-2xl overflow-hidden shadow-sm h-64">
+                        <img :src="gallery.image || 'https://placehold.co/600x400/065f46/ffffff?text=Galeri'" :alt="gallery.title" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" onerror="this.src='https://placehold.co/600x400/065f46/ffffff?text=Galeri+Desa'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-950/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-6">
+                            <span class="text-gold-400 text-xs font-semibold uppercase tracking-wider" x-text="gallery.category"></span>
+                            <h3 class="text-white font-bold text-lg mt-1" x-text="gallery.title"></h3>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </section>
+
+    <!-- KONTAK & LOKASI PETA -->
+    <section id="kontak" class="py-20 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                <span class="text-emerald-700 font-bold text-xs uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">Hubungi Kami</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-emerald-950">Lokasi & Kontak Kantor Desa</h2>
+                <p class="text-slate-600 text-base">Silakan kunjungi kantor desa atau kirimkan pesan untuk pertanyaan dan pengaduan.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                <!-- Info & Contact Form -->
+                <div class="lg:col-span-6 bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-6">
+                    <h3 class="text-xl font-bold text-emerald-950">Kirim Pesan / Pengaduan</h3>
+                    <form @submit.prevent="submitMessage" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Pengirim</label>
+                            <input type="text" x-model="msgForm.name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700" placeholder="Nama Lengkap">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Email / WhatsApp</label>
+                            <input type="text" x-model="msgForm.contact" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700" placeholder="08123456789 / email@domain.com">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Pesan / Pertanyaan</label>
+                            <textarea x-model="msgForm.message" rows="4" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700" placeholder="Tuliskan pesan atau pengaduan anda..."></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-800 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl transition shadow">
+                            Kirim Pesan
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Map & Address Details -->
+                <div class="lg:col-span-6 space-y-6">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-4">
+                        <h3 class="text-xl font-bold text-emerald-950">Kantor Desa Sukaluyu</h3>
+                        <div class="space-y-3 text-sm text-slate-600">
+                            <p class="flex items-start gap-3">
+                                <i class="fas fa-map-marker-alt text-emerald-700 text-lg mt-0.5"></i>
+                                <span x-text="cms.settings.address || 'Jl. Raya Sukaluyu No. 1, Telukjambe Timur, Kabupaten Karawang, Jawa Barat 41361'"></span>
+                            </p>
+                            <p class="flex items-center gap-3">
+                                <i class="fas fa-envelope text-emerald-700 text-lg"></i>
+                                <span x-text="cms.settings.email || 'desasukaluyu@karawangkab.go.id'"></span>
+                            </p>
+                            <p class="flex items-center gap-3">
+                                <i class="fas fa-phone text-emerald-700 text-lg"></i>
+                                <span x-text="cms.settings.phone || '(0267) 8401234'"></span>
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Embed Map Mock / Iframe -->
+                    <div class="rounded-3xl overflow-hidden shadow-sm border border-slate-200 h-64 bg-slate-200 relative">
+                        <iframe class="w-full h-full border-0" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15865.123456789!2d107.25!3d-6.32!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMTknMTIuMCJTIDEwN8KwMTUnMDAuMCJF!5e0!3m2!1sid!2sid!4v1650000000000!5m2!1sid!2sid" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-emerald-950 text-emerald-100 py-16 border-t border-emerald-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-emerald-800 rounded-xl flex items-center justify-center text-white border border-gold-500/40">
+                            <i class="fas fa-landmark text-gold-500"></i>
+                        </div>
+                        <span class="text-lg font-bold text-white" x-text="cms.settings.villageName || 'Desa Sukaluyu'"></span>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Portal resmi layanan digital pemerintahan Desa Sukaluyu, Kecamatan Telukjambe Timur, Kabupaten Karawang, Jawa Barat.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-4 text-sm uppercase tracking-wider">Tautan Cepat</h4>
+                    <ul class="space-y-2 text-xs text-slate-400">
+                        <li><a href="#sejarah" class="hover:text-gold-400 transition">Sejarah Desa</a></li>
+                        <li><a href="#perangkat" class="hover:text-gold-400 transition">Perangkat Desa</a></li>
+                        <li><a href="#layanan" class="hover:text-gold-400 transition">Layanan Surat Mandiri</a></li>
+                        <li><a href="#berita" class="hover:text-gold-400 transition">Portal Berita</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-4 text-sm uppercase tracking-wider">Potensi & UMKM</h4>
+                    <ul class="space-y-2 text-xs text-slate-400">
+                        <li><a href="#umkm" class="hover:text-gold-400 transition">Kuliner Lokal</a></li>
+                        <li><a href="#umkm" class="hover:text-gold-400 transition">Kerajinan Warga</a></li>
+                        <li><a href="#statistik" class="hover:text-gold-400 transition">Statistik Penduduk</a></li>
+                        <li><a href="#galeri" class="hover:text-gold-400 transition">Galeri Dokumentasi</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-4 text-sm uppercase tracking-wider">Jam Pelayanan Kantor</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                        Senin - Kamis: 08:00 - 15:00 WIB<br>
+                        Jumat: 08:00 - 11:30 WIB<br>
+                        Sabtu & Minggu: Libur
+                    </p>
+                    <button @click="openAdminLogin = true" class="text-xs bg-emerald-800 hover:bg-emerald-700 text-gold-400 font-bold px-4 py-2 rounded-xl transition border border-gold-500/30">
+                        <i class="fas fa-user-lock mr-1"></i> Admin CMS Portal
+                    </button>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-emerald-900 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-4">
+                <p>&copy; 2026 Pemerintah Desa Sukaluyu. All rights reserved.</p>
+                <p>Designed with <i class="fas fa-heart text-gold-500"></i> for Digital Village Karawang</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- NEWS DETAIL MODAL -->
+    <div x-show="openNewsModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-8 space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button @click="openNewsModal = false" class="absolute top-6 right-6 text-slate-400 hover:text-slate-700 text-xl font-bold">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="space-y-3">
+                <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full uppercase tracking-wider" x-text="activeNews.category"></span>
+                <h2 class="text-2xl font-bold text-emerald-950" x-text="activeNews.title"></h2>
+                <p class="text-xs text-slate-400 flex items-center gap-2">
+                    <i class="fas fa-calendar-alt text-emerald-700"></i> <span x-text="activeNews.date"></span> • <i class="fas fa-user text-emerald-700"></i> <span x-text="activeNews.author"></span>
+                </p>
+            </div>
+            <div class="rounded-2xl overflow-hidden h-64 bg-slate-200">
+                <img :src="activeNews.image" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400/065f46/ffffff?text=Berita'">
+            </div>
+            <p class="text-slate-700 leading-relaxed text-sm sm:text-base whitespace-pre-line" x-text="activeNews.content || activeNews.excerpt"></p>
+            <button @click="openNewsModal = false" class="w-full bg-emerald-800 text-white py-3 rounded-xl font-semibold text-sm">Tutup</button>
+        </div>
+    </div>
+
+    <!-- ADMIN LOGIN MODAL -->
+    <div x-show="openAdminLogin" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 space-y-6 shadow-2xl relative">
+            <button @click="openAdminLogin = false" class="absolute top-6 right-6 text-slate-400 hover:text-slate-700 text-xl font-bold">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="text-center space-y-2">
+                <div class="w-14 h-14 bg-emerald-800 text-gold-500 rounded-2xl flex items-center justify-center text-2xl mx-auto shadow">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-emerald-950">Login Admin CMS</h3>
+                <p class="text-xs text-slate-500">Masukkan kredensial pengelola website desa.</p>
+            </div>
+            <form @submit.prevent="handleAdminLogin" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Username Admin</label>
+                    <input type="text" x-model="loginInput.user" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700" placeholder="admin">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Password</label>
+                    <input type="password" x-model="loginInput.pass" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700" placeholder="••••••••">
+                </div>
+                <button type="submit" class="w-full bg-emerald-800 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl transition shadow">
+                    Masuk ke Panel CMS
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FULL ADMIN CMS DASHBOARD MODAL -->
+    <div x-show="openAdminDashboard" x-cloak class="fixed inset-0 z-50 flex flex-col bg-slate-100 overflow-hidden">
+        <!-- Top CMS Header -->
+        <header class="bg-emerald-950 text-white px-6 py-4 flex justify-between items-center shadow-md">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gold-500 text-emerald-950 flex items-center justify-center font-bold">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg">Panel CMS Desa Sukaluyu</h1>
+                    <p class="text-xs text-emerald-300">Kelola Seluruh Konten Website secara Real-Time</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button @click="openAdminDashboard = false" class="bg-emerald-800 hover:bg-emerald-700 px-4 py-2 rounded-xl text-xs font-bold transition">
+                    <i class="fas fa-eye mr-1"></i> Lihat Website
+                </button>
+                <button @click="logoutAdmin" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition">
+                    <i class="fas fa-sign-out-alt mr-1"></i> Keluar
+                </button>
+            </div>
+        </header>
+
+        <!-- CMS Main Content Layout -->
+        <div class="flex-1 flex overflow-hidden">
+            <!-- Sidebar Navigation -->
+            <aside class="w-64 bg-slate-900 text-slate-300 p-6 space-y-2 overflow-y-auto border-r border-slate-800 hidden md:block">
+                <p class="text-[10px] uppercase font-bold text-slate-500 tracking-wider mb-2">Menu Utama CMS</p>
+                <button @click="cmsTab = 'settings'" :class="cmsTab === 'settings' ? 'bg-emerald-800 text-white' : 'hover:bg-slate-800'" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition flex items-center gap-3">
+                    <i class="fas fa-sliders-h text-gold-500 w-5"></i> Pengaturan Umum
+                </button>
+                <button @click="cmsTab = 'profile'" :class="cmsTab === 'profile' ? 'bg-emerald-800 text-white' : 'hover:bg-slate-800'" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition flex items-center gap-3">
+                    <i class="fas fa-book text-gold-500 w-5"></i> Profil & Visi Misi
+                </button>
+                <button @click="cmsTab = 'officials'" :class="cmsTab === 'officials' ? 'bg-emerald-800 text-white' : 'hover:bg-slate-800'" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition flex items-center gap-3">
+                    <i class="fas fa-users text-gold-500 w-5"></i> Perangkat Desa
+                </button>
+                <button @click="cmsTab = 'news'" :class="cmsTab === 'news' ? 'bg-emerald-800 text-white' : 'hover:bg-slate-800'" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition flex items-center gap-3">
+                    <i class="fas fa-newspaper text-gold-500 w-5"></i> Kelola Berita
+                </button>
+                <button @click="cmsTab = 'umkm'" :class="cmsTab === 'umkm' ? 'bg-emerald-800 text-white' : 'hover:bg-slate-800'" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition flex items-center gap-3">
+                    <i class="fas fa-store text-gold-500 w-5"></i> Kelola UMKM
+                </button>
+                <button @click="cmsTab = 'stats'" :class="cmsTab === 'stats' ? 'bg-emerald-800 text-white' : 'hover:bg-slate-800'" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition flex items-center gap-3">
+                    <i class="fas fa-chart-bar text-gold-500 w-5"></i> Statistik Penduduk
+                </button>
+                <button @click="cmsTab = 'letters'" :class="cmsTab === 'letters' ? 'bg-emerald-800 text-white' : 'hover:bg-slate-800'" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition flex items-center gap-3">
+                    <i class="fas fa-file-invoice text-gold-500 w-5"></i> Surat Masuk <span class="ml-auto bg-gold-500 text-emerald-950 px-2 py-0.5 rounded-full text-[10px]" x-text="cms.letterRequests.length"></span>
+                </button>
+                <button @click="cmsTab = 'messages'" :class="cmsTab === 'messages' ? 'bg-emerald-800 text-white' : 'hover:bg-slate-800'" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition flex items-center gap-3">
+                    <i class="fas fa-envelope text-gold-500 w-5"></i> Pesan / Pengaduan <span class="ml-auto bg-rose-500 text-white px-2 py-0.5 rounded-full text-[10px]" x-text="cms.messages.length"></span>
+                </button>
+            </aside>
+
+            <!-- Main CMS Area -->
+            <main class="flex-1 p-6 md:p-10 overflow-y-auto bg-slate-100">
+                
+                <!-- 1. SETTINGS TAB -->
+                <div x-show="cmsTab === 'settings'" class="space-y-6 max-w-4xl">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-6">
+                        <h2 class="text-xl font-bold text-emerald-950">Pengaturan Umum Website Desa</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Desa</label>
+                                <input type="text" x-model="cms.settings.villageName" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Kecamatan & Kabupaten</label>
+                                <input type="text" x-model="cms.settings.district" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Teks Berjalan / Pengumuman Ticker</label>
+                            <input type="text" x-model="cms.settings.announcementTicker" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Subjudul Hero Banner</label>
+                            <textarea x-model="cms.settings.heroSubtitle" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700"></textarea>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Kepala Desa</label>
+                                <input type="text" x-model="cms.settings.headName" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Email Desa</label>
+                                <input type="text" x-model="cms.settings.email" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Telepon</label>
+                                <input type="text" x-model="cms.settings.phone" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Kantor Desa</label>
+                            <input type="text" x-model="cms.settings.address" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700">
+                        </div>
+                        <button @click="saveCMSData" class="bg-emerald-800 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow">
+                            <i class="fas fa-save mr-1"></i> Simpan Perubahan Pengaturan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. PROFILE TAB -->
+                <div x-show="cmsTab === 'profile'" class="space-y-6 max-w-4xl">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-6">
+                        <h2 class="text-xl font-bold text-emerald-950">Kelola Profil, Sejarah & Visi Misi</h2>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Deskripsi Singkat Profil</label>
+                            <textarea x-model="cms.profile.shortDesc" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Sejarah Lengkap Desa</label>
+                            <textarea x-model="cms.profile.history" rows="5" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Visi Utama Desa</label>
+                            <input type="text" x-model="cms.profile.vision" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700">
+                        </div>
+                        <button @click="saveCMSData" class="bg-emerald-800 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow">
+                            <i class="fas fa-save mr-1"></i> Simpan Profil & Sejarah
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. OFFICIALS TAB -->
+                <div x-show="cmsTab === 'officials'" class="space-y-6 max-w-5xl">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-6">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-xl font-bold text-emerald-950">Manajemen Perangkat Desa</h2>
+                            <button @click="editOfficial = {id: Date.now(), name: '', position: '', nip: '', phone: '', image: ''}; openOfficialModal = true" class="bg-emerald-800 text-white text-xs px-4 py-2.5 rounded-xl font-bold">
+                                <i class="fas fa-plus mr-1"></i> Tambah Perangkat
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-slate-600">
+                                    <tr>
+                                        <th class="p-3">Nama</th>
+                                        <th class="p-3">Jabatan</th>
+                                        <th class="p-3">NIP / NIPD</th>
+                                        <th class="p-3">Telepon</th>
+                                        <th class="p-3 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <template x-for="off in cms.officials" :key="off.id">
+                                        <tr>
+                                            <td class="p-3 font-semibold text-emerald-950" x-text="off.name"></td>
+                                            <td class="p-3 text-slate-600" x-text="off.position"></td>
+                                            <td class="p-3 text-slate-600" x-text="off.nip"></td>
+                                            <td class="p-3 text-slate-600" x-text="off.phone"></td>
+                                            <td class="p-3 text-right space-x-2">
+                                                <button @click="editOfficial = {...off}; openOfficialModal = true" class="text-emerald-700 font-bold hover:underline">Edit</button>
+                                                <button @click="deleteOfficial(off.id)" class="text-rose-600 font-bold hover:underline">Hapus</button>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. NEWS TAB -->
+                <div x-show="cmsTab === 'news'" class="space-y-6 max-w-5xl">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-6">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-xl font-bold text-emerald-950">Kelola Berita & Pengumuman</h2>
+                            <button @click="editNewsItem = {id: Date.now(), title: '', category: 'Kegiatan Desa', date: '02 Oktober 2026', author: 'Admin Desa', excerpt: '', content: '', image: ''}; openNewsEditModal = true" class="bg-emerald-800 text-white text-xs px-4 py-2.5 rounded-xl font-bold">
+                                <i class="fas fa-plus mr-1"></i> Tambah Berita Baru
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-slate-600">
+                                    <tr>
+                                        <th class="p-3">Judul Berita</th>
+                                        <th class="p-3">Kategori</th>
+                                        <th class="p-3">Tanggal</th>
+                                        <th class="p-3 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <template x-for="n in cms.news" :key="n.id">
+                                        <tr>
+                                            <td class="p-3 font-semibold text-emerald-950" x-text="n.title"></td>
+                                            <td class="p-3"><span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-semibold" x-text="n.category"></span></td>
+                                            <td class="p-3 text-slate-600" x-text="n.date"></td>
+                                            <td class="p-3 text-right space-x-2">
+                                                <button @click="editNewsItem = {...n}; openNewsEditModal = true" class="text-emerald-700 font-bold hover:underline">Edit</button>
+                                                <button @click="deleteNews(n.id)" class="text-rose-600 font-bold hover:underline">Hapus</button>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. UMKM TAB -->
+                <div x-show="cmsTab === 'umkm'" class="space-y-6 max-w-5xl">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-6">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-xl font-bold text-emerald-950">Manajemen Potensi & UMKM Desa</h2>
+                            <button @click="editUmkmItem = {id: Date.now(), name: '', category: 'Kuliner', owner: '', price: '', whatsapp: '', desc: '', image: ''}; openUmkmEditModal = true" class="bg-emerald-800 text-white text-xs px-4 py-2.5 rounded-xl font-bold">
+                                <i class="fas fa-plus mr-1"></i> Tambah UMKM
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-slate-600">
+                                    <tr>
+                                        <th class="p-3">Nama Usaha</th>
+                                        <th class="p-3">Kategori</th>
+                                        <th class="p-3">Pemilik</th>
+                                        <th class="p-3">Harga</th>
+                                        <th class="p-3 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <template x-for="u in cms.umkm" :key="u.id">
+                                        <tr>
+                                            <td class="p-3 font-semibold text-emerald-950" x-text="u.name"></td>
+                                            <td class="p-3 text-slate-600" x-text="u.category"></td>
+                                            <td class="p-3 text-slate-600" x-text="u.owner"></td>
+                                            <td class="p-3 text-emerald-700 font-bold" x-text="u.price"></td>
+                                            <td class="p-3 text-right space-x-2">
+                                                <button @click="editUmkmItem = {...u}; openUmkmEditModal = true" class="text-emerald-700 font-bold hover:underline">Edit</button>
+                                                <button @click="deleteUmkm(u.id)" class="text-rose-600 font-bold hover:underline">Hapus</button>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. STATS TAB -->
+                <div x-show="cmsTab === 'stats'" class="space-y-6 max-w-4xl">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-6">
+                        <h2 class="text-xl font-bold text-emerald-950">Kelola Statistik Penduduk</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Total Penduduk</label>
+                                <input type="text" x-model="cms.stats.totalPenduduk" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Total Kepala Keluarga (KK)</label>
+                                <input type="text" x-model="cms.stats.totalKK" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Jumlah RT / RW</label>
+                                <input type="text" x-model="cms.stats.totalRT" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Jumlah Laki-Laki</label>
+                                <input type="text" x-model="cms.stats.laki" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Jumlah Perempuan</label>
+                                <input type="text" x-model="cms.stats.perempuan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Jumlah Dusun</label>
+                                <input type="text" x-model="cms.stats.dusun" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-700">
+                            </div>
+                        </div>
+                        <button @click="saveCMSData" class="bg-emerald-800 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow">
+                            <i class="fas fa-save mr-1"></i> Simpan Statistik Penduduk
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 7. LETTERS TAB -->
+                <div x-show="cmsTab === 'letters'" class="space-y-6 max-w-5xl">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-6">
+                        <h2 class="text-xl font-bold text-emerald-950">Daftar Permohonan Surat Online Warga</h2>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-slate-600">
+                                    <tr>
+                                        <th class="p-3">Nama & NIK</th>
+                                        <th class="p-3">Jenis Surat</th>
+                                        <th class="p-3">WhatsApp</th>
+                                        <th class="p-3">Keperluan</th>
+                                        <th class="p-3 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <template x-for="req in cms.letterRequests" :key="req.id">
+                                        <tr>
+                                            <td class="p-3">
+                                                <strong class="text-emerald-950 block" x-text="req.nama"></strong>
+                                                <span class="text-xs text-slate-500" x-text="req.nik"></span>
+                                            </td>
+                                            <td class="p-3 font-semibold text-emerald-800" x-text="req.serviceName"></td>
+                                            <td class="p-3 text-slate-600" x-text="req.phone"></td>
+                                            <td class="p-3 text-slate-600 max-w-xs truncate" x-text="req.keperluan"></td>
+                                            <td class="p-3 text-right">
+                                                <button @click="deleteLetter(req.id)" class="text-rose-600 font-bold hover:underline">Selesai / Hapus</button>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. MESSAGES TAB -->
+                <div x-show="cmsTab === 'messages'" class="space-y-6 max-w-5xl">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-6">
+                        <h2 class="text-xl font-bold text-emerald-950">Pesan Masuk & Pengaduan Masyarakat</h2>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-slate-600">
+                                    <tr>
+                                        <th class="p-3">Pengirim</th>
+                                        <th class="p-3">Kontak</th>
+                                        <th class="p-3">Pesan</th>
+                                        <th class="p-3 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <template x-for="m in cms.messages" :key="m.id">
+                                        <tr>
+                                            <td class="p-3 font-semibold text-emerald-950" x-text="m.name"></td>
+                                            <td class="p-3 text-slate-600" x-text="m.contact"></td>
+                                            <td class="p-3 text-slate-600" x-text="m.message"></td>
+                                            <td class="p-3 text-right">
+                                                <button @click="deleteMessage(m.id)" class="text-rose-600 font-bold hover:underline">Hapus</button>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- SUB-MODALS FOR CMS EDITING -->
+    <!-- Official Edit Modal -->
+    <div x-show="openOfficialModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 space-y-4 shadow-2xl">
+            <h3 class="text-xl font-bold text-emerald-950">Form Perangkat Desa</h3>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap</label>
+                <input type="text" x-model="editOfficial.name" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Jabatan</label>
+                <input type="text" x-model="editOfficial.position" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">NIP / NIPD</label>
+                <input type="text" x-model="editOfficial.nip" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Telepon / WA</label>
+                <input type="text" x-model="editOfficial.phone" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">URL Foto (Opsional)</label>
+                <input type="text" x-model="editOfficial.image" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm" placeholder="https://...">
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button @click="openOfficialModal = false" class="flex-1 bg-slate-200 text-slate-700 py-2.5 rounded-xl text-sm font-semibold">Batal</button>
+                <button @click="saveOfficial" class="flex-1 bg-emerald-800 text-white py-2.5 rounded-xl text-sm font-semibold">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- News Edit Modal -->
+    <div x-show="openNewsEditModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-8 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 class="text-xl font-bold text-emerald-950">Form Berita Desa</h3>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Judul Berita</label>
+                <input type="text" x-model="editNewsItem.title" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori</label>
+                <input type="text" x-model="editNewsItem.category" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal</label>
+                <input type="text" x-model="editNewsItem.date" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Ringkasan (Excerpt)</label>
+                <textarea x-model="editNewsItem.excerpt" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm"></textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Konten Lengkap</label>
+                <textarea x-model="editNewsItem.content" rows="4" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm"></textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">URL Gambar</label>
+                <input type="text" x-model="editNewsItem.image" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button @click="openNewsEditModal = false" class="flex-1 bg-slate-200 text-slate-700 py-2.5 rounded-xl text-sm font-semibold">Batal</button>
+                <button @click="saveNews" class="flex-1 bg-emerald-800 text-white py-2.5 rounded-xl text-sm font-semibold">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- UMKM Edit Modal -->
+    <div x-show="openUmkmEditModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-8 space-y-4 shadow-2xl">
+            <h3 class="text-xl font-bold text-emerald-950">Form UMKM Desa</h3>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Usaha</label>
+                <input type="text" x-model="editUmkmItem.name" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori</label>
+                <input type="text" x-model="editUmkmItem.category" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Pemilik</label>
+                <input type="text" x-model="editUmkmItem.owner" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Harga / Kisar</label>
+                <input type="text" x-model="editUmkmItem.price" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor WhatsApp (Tanpa 0, misal: 62812...)</label>
+                <input type="text" x-model="editUmkmItem.whatsapp" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Deskripsi Singkat</label>
+                <textarea x-model="editUmkmItem.desc" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm"></textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">URL Gambar</label>
+                <input type="text" x-model="editUmkmItem.image" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm">
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button @click="openUmkmEditModal = false" class="flex-1 bg-slate-200 text-slate-700 py-2.5 rounded-xl text-sm font-semibold">Batal</button>
+                <button @click="saveUmkm" class="flex-1 bg-emerald-800 text-white py-2.5 rounded-xl text-sm font-semibold">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div x-show="toast.show" x-cloak class="fixed bottom-5 right-5 z-50 bg-emerald-900 text-white px-6 py-3 rounded-2xl shadow-2xl border border-gold-500/40 text-sm flex items-center gap-3 animate-bounce">
+        <i class="fas fa-check-circle text-gold-500 text-lg"></i>
+        <span x-text="toast.message"></span>
+    </div>
+
+    <script>
+        function sukaluyuApp() {
+            return {
+                mobileMenuOpen: false,
+                openAdminLogin: false,
+                openAdminDashboard: false,
+                openNewsModal: false,
+                openOfficialModal: false,
+                openNewsEditModal: false,
+                openUmkmEditModal: false,
+                
+                cmsTab: 'settings',
+                
+                loginInput: { user: '', pass: '' },
+                
+                toast: { show: false, message: '' },
+                
+                showToast(msg) {
+                    this.toast.message = msg;
+                    this.toast.show = true;
+                    setTimeout(() => { this.toast.show = false; }, 3500);
+                },
+
+                // Default CMS Data Structure
+                cms: {
+                    settings: {
+                        villageName: 'Desa Sukaluyu',
+                        district: 'Kec. Telukjambe Timur, Kab. Karawang',
+                        announcementTicker: 'Selamat Datang di Portal Resmi Digital Desa Sukaluyu, Kabupaten Karawang.',
+                        heroSubtitle: 'Mewujudkan pelayanan publik yang transparan, cepat, dan berbasis digital untuk kemakmuran seluruh warga masyarakat Desa Sukaluyu.',
+                        headName: 'H. Ahmad Supriyadi, S.E.',
+                        email: 'desasukaluyu@karawangkab.go.id',
+                        phone: '(0267) 8401234',
+                        address: 'Jl. Raya Sukaluyu No. 1, Telukjambe Timur, Kabupaten Karawang, Jawa Barat 41361'
+                    },
+                    profile: {
+                        shortDesc: 'Mengenal lebih dekat asal-usul, nilai budaya, dan perjalanan pembangunan Desa Sukaluyu dari masa ke masa.',
+                        history: 'Desa Sukaluyu berasal dari kata Suka dan Luyu yang berarti masyarakatnya hidup berdampingan secara damai, selaras, dan gotong royong. Berdiri sejak tahun 1982 sebagai pemekaran wilayah, desa ini terus berkembang menjadi kawasan agraris modern yang dinamis.',
+                        vision: 'Terwujudnya Desa Sukaluyu yang Religius, Maju, Sejahtera, dan Berbasis Digital yang Transparan.',
+                        missions: [
+                            'Meningkatkan kualitas pelayanan publik berbasis digital dan transparan.',
+                            'Mengembangkan potensi ekonomi kerakyatan melalui UMKM desa.',
+                            'Membangun infrastruktur desa yang merata dan berkelanjutan.',
+                            'Meningkatkan kerukunan sosial dan keagamaan di tengah masyarakat.'
+                        ]
+                    },
+                    stats: {
+                        totalPenduduk: '8,420',
+                        totalKK: '2,450',
+                        totalRT: '32',
+                        laki: '4,210',
+                        perempuan: '4,210',
+                        dusun: '4 Dusun / 8 RW'
+                    },
+                    officials: [
+                        { id: 1, name: 'H. Ahmad Supriyadi, S.E.', position: 'Kepala Desa', nip: '19750812 200501 1 003', phone: '081234567890', image: 'https://placehold.co/400x400/065f46/ffffff?text=Kades' },
+                        { id: 2, name: 'Siti Rahmawati, S.Sos.', position: 'Sekretaris Desa', nip: '19820315 200812 2 001', phone: '081398765432', image: 'https://placehold.co/400x400/065f46/ffffff?text=Sekdes' },
+                        { id: 3, name: 'Drs. H. Mulyana', position: 'Kasi Pemerintahan', nip: '19681204 199203 1 005', phone: '081512345678', image: 'https://placehold.co/400x400/065f46/ffffff?text=Kasi' },
+                        { id: 4, name: 'Rian Hidayat, A.Md.', position: 'Kaur Keuangan', nip: '19900520 201502 1 002', phone: '081898765432', image: 'https://placehold.co/400x400/065f46/ffffff?text=Kaur' }
+                    ],
+                    services: [
+                        { id: 1, name: 'Surat Keterangan Domisili', desc: 'Pengantar domisili tempat tinggal warga.', icon: 'fas fa-home' },
+                        { id: 2, name: 'Surat Keterangan Tidak Mampu (SKTM)', desc: 'Keperluan bantuan sosial dan kesehatan.', icon: 'fas fa-hands-holding-child' },
+                        { id: 3, name: 'Surat Pengantar Kelahiran', desc: 'Pencatatan akta kelahiran bayi baru lahir.', icon: 'fas fa-baby' },
+                        { id: 4, name: 'Surat Keterangan Usaha (SKU)', desc: 'Legalitas pengantar izin UMKM warga.', icon: 'fas fa-store' }
+                    ],
+                    news: [
+                        { id: 1, title: 'Pemdes Sukaluyu Salurkan Bantuan Langsung Tunai (BLT) Tahap I', category: 'Pemerintahan', date: '01 Oktober 2026', author: 'Admin Desa', excerpt: 'Pemerintah Desa Sukaluyu menyalurkan bantuan kepada 150 Keluarga Penerima Manfaat (KPM) di aula kantor desa dengan tertib.', content: 'Pemerintah Desa Sukaluyu kembali menyalurkan Bantuan Langsung Tunai (BLT) Dana Desa tahap pertama tahun 2026. Acara dihadiri oleh bapak kepala desa, pendamping desa, serta warga penerima manfaat.', image: 'https://placehold.co/600x400/065f46/ffffff?text=BLT+Desa' },
+                        { id: 2, title: 'Pelatihan Digital Marketing UMKM Warga Sukaluyu', category: 'Ekonomi', date: '28 September 2026', author: 'Kaur Ekbang', excerpt: 'Warga pelaku UMKM antusias mengikuti pelatihan pemasaran digital untuk menembus pasar nasional secara online.', content: 'Guna meningkatkan perekonomian warga, pemdes mengadakan workshop digital marketing bekerja sama dengan akademisi setempat.', image: 'https://placehold.co/600x400/d4af37/065f46?text=UMKM+Digital' },
+                        { id: 3, title: 'Kerja Bakti Massal Sambut Bulan Kebersihan Desa', category: 'Lingkungan', date: '25 September 2026', author: 'Ketua RW 02', excerpt: 'Warga bersama perangkat desa turun tangan membersihkan saluran air dan fasilitas umum guna mencegah banjir.', content: 'Kegiatan gotong royong rutin ini berhasil mengumpulkan puluhan karung sampah dan membersihkan parit utama desa.', image: 'https://placehold.co/600x400/065f46/ffffff?text=Kerja+Bakti' }
+                    ],
+                    umkm: [
+                        { id: 1, name: 'Keripik Singkong Barokah', category: 'Kuliner', owner: 'Ibu Aminah', price: 'Rp 15.000 / bungkus', whatsapp: '628123456789', desc: 'Keripik singkong renyah aneka rasa buatan rumah khas Sukaluyu.', image: 'https://placehold.co/600x400/d4af37/065f46?text=Keripik' },
+                        { id: 2, name: 'Anyaman Bambu Kreatif', category: 'Kerajinan', owner: 'Bapak Suparman', price: 'Mulai Rp 50.000', whatsapp: '628139876543', desc: 'Perabotan rumah tangga dari bambu berkualitas tinggi tahan lama.', image: 'https://placehold.co/600x400/065f46/ffffff?text=Bambu' },
+                        { id: 3, name: 'Madu Randu Asli Sukaluyu', category: 'Hasil Bumi', owner: 'Kelompok Tani Hutan', price: 'Rp 95.000 / botol', whatsapp: '628151234567', desc: 'Madu murni hasil peternakan lebah lokal di area perkebunan desa.', image: 'https://placehold.co/600x400/d4af37/065f46?text=Madu' }
+                    ],
+                    galleries: [
+                        { id: 1, title: 'Kantor Desa Sukaluyu', category: 'Infrastruktur', image: 'https://placehold.co/600x400/065f46/ffffff?text=Kantor+Desa' },
+                        { id: 2, title: 'Musyawarah Desa (Musdes)', category: 'Pemerintahan', image: 'https://placehold.co/600x400/d4af37/065f46?text=Musdes' },
+                        { id: 3, title: 'Posyandu Balita Sehat', category: 'Kesehatan', image: 'https://placehold.co/600x400/065f46/ffffff?text=Posyandu' },
+                        { id: 4, title: 'Panen Raya Padi Organik', category: 'Pertanian', image: 'https://placehold.co/600x400/d4af37/065f46?text=Panen+Padi' },
+                        { id: 5, title: 'Festival Budaya Desa', category: 'Budaya', image: 'https://placehold.co/600x400/065f46/ffffff?text=Festival' },
+                        { id: 6, title: 'Pembangunan Jalan Tani', category: 'Infrastruktur', image: 'https://placehold.co/600x400/d4af37/065f46?text=Jalan+Tani' }
+                    ],
+                    letterRequests: [],
+                    messages: []
+                },
+
+                // Active letter request form
+                selectedService: { id: 1, name: 'Surat Keterangan Domisili' },
+                letterForm: { nama: '', nik: '', phone: '', rt_rw: '', keperluan: '' },
+
+                // Active message form
+                msgForm: { name: '', contact: '', message: '' },
+
+                // Active edit objects
+                editOfficial: {},
+                editNewsItem: {},
+                editUmkmItem: {},
+                activeNews: {},
+
+                init() {
+                    // Load from localStorage if available
+                    const saved = localStorage.getItem('sukaluyu_cms_data');
+                    if (saved) {
+                        try {
+                            this.cms = JSON.parse(saved);
+                        } catch(e) { console.error(e); }
+                    }
+                    if (this.cms.services.length > 0) {
+                        this.selectedService = this.cms.services[0];
+                    }
+                    
+                    // Render Chart.js after DOM load
+                    setTimeout(() => {
+                        this.renderChart();
+                    }, 500);
+                },
+
+                saveCMSData() {
+                    localStorage.setItem('sukaluyu_cms_data', JSON.stringify(this.cms));
+                    this.showToast('Perubahan berhasil disimpan secara real-time!');
+                },
+
+                handleAdminLogin() {
+                    if (this.loginInput.user === 'admin' && this.loginInput.pass === 'sukaluyujaya') {
+                        this.openAdminLogin = false;
+                        this.openAdminDashboard = true;
+                        this.loginInput = { user: '', pass: '' };
+                        this.showToast('Login Admin Sukses!');
+                    } else {
+                        this.showToast('Username atau Password salah! (admin / sukaluyujaya)');
+                    }
+                },
+
+                logoutAdmin() {
+                    this.openAdminDashboard = false;
+                    this.showToast('Anda telah keluar dari CMS.');
+                },
+
+                submitLetterRequest() {
+                    const newReq = {
+                        id: Date.now(),
+                        serviceName: this.selectedService.name,
+                        ...this.letterForm,
+                        date: new Date().toLocaleDateString('id-ID')
+                    };
+                    this.cms.letterRequests.unshift(newReq);
+                    this.saveCMSData();
+                    this.showToast('Permohonan surat berhasil dikirim! Silakan tunggu konfirmasi.');
+                    this.letterForm = { nama: '', nik: '', phone: '', rt_rw: '', keperluan: '' };
+                },
+
+                submitMessage() {
+                    const newMsg = {
+                        id: Date.now(),
+                        ...this.msgForm,
+                        date: new Date().toLocaleDateString('id-ID')
+                    };
+                    this.cms.messages.unshift(newMsg);
+                    this.saveCMSData();
+                    this.showToast('Pesan berhasil terkirim ke Kantor Desa.');
+                    this.msgForm = { name: '', contact: '', message: '' };
+                },
+
+                saveOfficial() {
+                    const idx = this.cms.officials.findIndex(o => o.id === this.editOfficial.id);
+                    if (idx >= 0) {
+                        this.cms.officials[idx] = this.editOfficial;
+                    } else {
+                        this.cms.officials.push(this.editOfficial);
+                    }
+                    this.saveCMSData();
+                    this.openOfficialModal = false;
+                },
+
+                deleteOfficial(id) {
+                    if(confirm('Hapus perangkat desa ini?')) {
+                        this.cms.officials = this.cms.officials.filter(o => o.id !== id);
+                        this.saveCMSData();
+                    }
+                },
+
+                saveNews() {
+                    const idx = this.cms.news.findIndex(n => n.id === this.editNewsItem.id);
+                    if (idx >= 0) {
+                        this.cms.news[idx] = this.editNewsItem;
+                    } else {
+                        this.cms.news.unshift(this.editNewsItem);
+                    }
+                    this.saveCMSData();
+                    this.openNewsEditModal = false;
+                },
+
+                deleteNews(id) {
+                    if(confirm('Hapus berita ini?')) {
+                        this.cms.news = this.cms.news.filter(n => n.id !== id);
+                        this.saveCMSData();
+                    }
+                },
+
+                saveUmkm() {
+                    const idx = this.cms.umkm.findIndex(u => u.id === this.editUmkmItem.id);
+                    if (idx >= 0) {
+                        this.cms.umkm[idx] = this.editUmkmItem;
+                    } else {
+                        this.cms.umkm.unshift(this.editUmkmItem);
+                    }
+                    this.saveCMSData();
+                    this.openUmkmEditModal = false;
+                },
+
+                deleteUmkm(id) {
+                    if(confirm('Hapus UMKM ini?')) {
+                        this.cms.umkm = this.cms.umkm.filter(u => u.id !== id);
+                        this.saveCMSData();
+                    }
+                },
+
+                deleteLetter(id) {
+                    this.cms.letterRequests = this.cms.letterRequests.filter(l => l.id !== id);
+                    this.saveCMSData();
+                    this.showToast('Permohonan surat ditandai selesai.');
+                },
+
+                deleteMessage(id) {
+                    this.cms.messages = this.cms.messages.filter(m => m.id !== id);
+                    this.saveCMSData();
+                    this.showToast('Pesan dihapus.');
+                },
+
+                renderChart() {
+                    const ctx = document.getElementById('demographicChart');
+                    if (!ctx) return;
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Anak-anak (0-14 Th)', 'Produktif (15-64 Th)', 'Lansia (65+ Th)'],
+                            datasets: [{
+                                data: [2150, 5210, 1060],
+                                backgroundColor: ['#059669', '#d4af37', '#334155'],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: { color: '#ffffff', font: { family: 'Inter', size: 12 } }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
